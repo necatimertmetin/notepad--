@@ -1,37 +1,35 @@
-import { AppBar, IconButton, Toolbar, Typography, TextField, Menu, MenuItem } from '@mui/material';
 import React, { useState, useEffect } from 'react';
-import { Menu as MenuIcon, Description, Javascript, Html, Css } from '@mui/icons-material';
-import { useLanguage } from '../context/LanguageContext';
+import { AppBar, IconButton, Toolbar, Typography, TextField, Menu, MenuItem } from '@mui/material';
+import { Menu as MenuIcon, Description, Html, Save, Segment, Visibility, VisibilityOff, VerticalSplit } from '@mui/icons-material';
+import { useCodeEditor } from '../context/CodeEditorContext'; // useCodeEditor'i kullanıyoruz
+import { saveFile } from '../../utils/FileUtils';
 
 export const Navbar: React.FC = () => {
   const [title, setTitle] = useState<string>('untitled');
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // Menu anchor element state
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const { language, setLanguage } = useLanguage(); // context'den dil bilgisi ve setLanguage fonksiyonu
+  const { setLanguage, formatWithPrettier, toggleMinimap } = useCodeEditor(); // Context'ten dil, format fonksiyonu ve kodu alıyoruz
 
-  // Load title from sessionStorage if available
+  // Load title from localStorage if available
   useEffect(() => {
-    const storedTitle = sessionStorage.getItem('navbarTitle');
+    const storedTitle = localStorage.getItem('navbarTitle');
     if (storedTitle) {
       setTitle(storedTitle);
     }
   }, []);
 
-  // Save title to sessionStorage when it changes
   const saveTitleToSessionStorage = (newTitle: string) => {
-    setTitle(newTitle || "untitled");
-    sessionStorage.setItem('navbarTitle', newTitle);
+    setTitle(newTitle || 'untitled');
+    localStorage.setItem('navbarTitle', newTitle);
   };
 
-  // Handle opening the menu
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget); // Set the anchor element for the menu
+    setAnchorEl(event.currentTarget);
   };
 
-  // Handle closing the menu
   const handleCloseMenu = () => {
-    setAnchorEl(null); // Close the menu
+    setAnchorEl(null);
   };
 
   const handleDoubleClick = () => {
@@ -40,13 +38,13 @@ export const Navbar: React.FC = () => {
 
   const handleBlur = () => {
     setIsEditing(false);
-    saveTitleToSessionStorage(title); // Save when losing focus
+    saveTitleToSessionStorage(title);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       setIsEditing(false);
-      saveTitleToSessionStorage(title); // Save when pressing Enter
+      saveTitleToSessionStorage(title);
     }
   };
 
@@ -54,53 +52,34 @@ export const Navbar: React.FC = () => {
     setTitle(event.target.value);
   };
 
-  // Determine the file type icon and language based on the title extension
   const getFileIconAndLanguage = (title: string) => {
     const fileExtension = title.split('.').pop()?.toLowerCase();
     
     switch (fileExtension) {
       case 'txt':
         return { icon: <Description />, language: 'plaintext' };
-      case 'js':
-        return { icon: <Javascript />, language: 'javascript' };
       case 'html':
         return { icon: <Html />, language: 'html' };
-      case 'css':
-        return { icon: <Css />, language: 'css' };
       default:
-        return { icon: null, language: 'txt' }; // Default to plaintext if no match
+        return { icon: null, language: 'plaintext' };
     }
   };
 
   const { icon, language: newLanguage } = getFileIconAndLanguage(title);
 
   useEffect(() => {
-    setLanguage(newLanguage); // Başlık değiştikçe dil bilgisini güncelle
+    setLanguage(newLanguage);
   }, [title, setLanguage]);
 
   return (
     <div>
       <AppBar position="static">
-        <Toolbar variant="dense" sx={{ cursor: 'grab' }}>
-          {/* Menu IconButton */}
-          <IconButton
-            size="small"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            onClick={handleMenuClick} // Handle menu button click
-          >
+        <Toolbar variant="dense">
+          <IconButton size="small" edge="start" color="inherit" aria-label="menu" onClick={handleMenuClick}>
             <MenuIcon />
           </IconButton>
 
-          {/* Title */}
-          <Typography
-            variant="subtitle1"
-            component="div"
-            sx={{ flexGrow: 1 }}
-            onDoubleClick={handleDoubleClick}
-          >
+          <Typography variant="subtitle1" component="div" sx={{ flexGrow: 1 }} onDoubleClick={handleDoubleClick}>
             {isEditing ? (
               <TextField
                 value={title}
@@ -116,26 +95,35 @@ export const Navbar: React.FC = () => {
             )}
           </Typography>
 
-          {/* File Type Icon */}
+          <IconButton size="small" color="inherit" sx={{ ml: 2 }} onClick={() => formatWithPrettier()}>
+            <Segment />
+          </IconButton>
+
+          <IconButton
+            size="small"
+            color="inherit"
+            sx={{ ml: 2 }}
+            onClick={toggleMinimap}
+          >
+            <VerticalSplit />
+          </IconButton>
+
+          <IconButton size="small" color="inherit" sx={{ ml: 2, cursor: "pointer" }} onClick={() => saveFile(title)}>
+              <Save/>
+            </IconButton>
           {icon && (
             <IconButton size="small" color="inherit" sx={{ ml: 2 }}>
               {icon}
             </IconButton>
           )}
 
-          {/* Menu */}
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleCloseMenu}
-          >
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
             <MenuItem onClick={handleCloseMenu}>Option 1</MenuItem>
             <MenuItem onClick={handleCloseMenu}>Option 2</MenuItem>
             <MenuItem onClick={handleCloseMenu}>Option 3</MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
-
     </div>
   );
 };

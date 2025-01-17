@@ -1,15 +1,15 @@
 import React from "react";
 import CodeEditor from "./components/CodeEditor/CodeEditor";
 import { Navbar } from "./components/Navbar/Navbar";
-import { LanguageProvider } from "./components/context/LanguageContext";
+import { CodeEditorProvider } from "./components/context/CodeEditorContext";
 
 const App: React.FC = () => {
   return (
     <div className="app">
-        <LanguageProvider>
+        <CodeEditorProvider>
          <Navbar/>
           <CodeEditor />
-      </LanguageProvider>
+      </CodeEditorProvider>
 
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppBar, IconButton, Toolbar, Typography, TextField, Menu, MenuItem } from '@mui/material';
-import { Menu as MenuIcon, Description, Html, Save, Segment, Visibility, VisibilityOff, VerticalSplit } from '@mui/icons-material';
+import { Menu as MenuIcon, Description, Html, Save, Segment, VerticalSplit } from '@mui/icons-material';
 import { useCodeEditor } from '../context/CodeEditorContext'; // useCodeEditor'i kullanıyoruz
 import { saveFile } from '../../utils/FileUtils';
 

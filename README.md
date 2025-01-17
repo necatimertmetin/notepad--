@@ -1,50 +1,39 @@
-# React + TypeScript + Vite
+# Code Editor with HTML Preview and Prettier Integration
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a code editor application built with React and Monaco Editor, featuring live HTML preview and integration with Prettier for code formatting. It uses the Material-UI library for the user interface and localStorage to persist the code and title.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Code Editing**: Write and edit code with Monaco Editor.
+- **HTML Preview**: View the live HTML output of your code in real-time.
+- **Prettier Integration**: Automatically format your code using Prettier.
+- **Language Support**: Currently supports plaintext and HTML, with potential for more languages.
+- **Minimap**: Toggle Monaco Editor's minimap feature on or off.
+- **Persistent Data**: Code and title are stored in `localStorage` so that they persist even after page refresh.
 
-## Expanding the ESLint configuration
+## Technologies Used
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **React**: For building the user interface.
+- **Monaco Editor**: A powerful code editor that supports various languages and features like syntax highlighting and autocompletion.
+- **Material-UI**: A popular React UI framework for styling and components.
+- **Prettier**: A code formatter that supports multiple languages, including HTML.
+- **localStorage**: To store the code and title persistently across sessions.
 
-- Configure the top-level `parserOptions` property like this:
+## Project Structure
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- `src/`
+  - `context/`: Contains the context provider and hooks for managing the state of the editor, language, code, and minimap.
+  - `components/`: Contains the main components of the app, such as `CodeEditor`, `Navbar`, and `HtmlPreview`.
+  - `App.tsx`: The main entry point of the app.
+  - `index.tsx`: The entry point for the React application.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Installation
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+To get started with this project, you need to clone the repository and install the required dependencies.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/code-editor.git
+cd code-editor
 ```

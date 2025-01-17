@@ -1,14 +1,16 @@
 import React from "react";
-import AppBar from "./components/AppBar/AppBar";
-import TabBar from "./components/TabBar/TabBar";
 import CodeEditor from "./components/CodeEditor/CodeEditor";
+import { Navbar } from "./components/Navbar/Navbar";
+import { LanguageProvider } from "./components/context/LanguageContext";
 
 const App: React.FC = () => {
   return (
     <div className="app">
-      <AppBar />
-      <TabBar />
-      <CodeEditor />
+        <LanguageProvider>
+         <Navbar/>
+          <CodeEditor />
+      </LanguageProvider>
+
     </div>
   );
 };

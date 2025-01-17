@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppBar, IconButton, Toolbar, Typography, TextField, Menu, MenuItem } from '@mui/material';
 import { Menu as MenuIcon, Description, Html, Save, Segment, VerticalSplit } from '@mui/icons-material';
-import { useCodeEditor } from '../context/CodeEditorContext'; // useCodeEditor'i kullanıyoruz
+import { useCodeEditor } from '../context/CodeEditorContext'; 
 import { saveFile } from '../../utils/FileUtils';
 
 export const Navbar: React.FC = () => {
@@ -9,9 +9,9 @@ export const Navbar: React.FC = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const { setLanguage, formatWithPrettier, toggleMinimap } = useCodeEditor(); // Context'ten dil, format fonksiyonu ve kodu alıyoruz
+  const { setLanguage, formatWithPrettier, toggleMinimap } = useCodeEditor(); 
 
-  // Load title from localStorage if available
+  
   useEffect(() => {
     const storedTitle = localStorage.getItem('navbarTitle');
     if (storedTitle) {

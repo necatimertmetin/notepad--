@@ -1,99 +1,112 @@
-import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
-import * as prettier from 'prettier/standalone';
-import * as parserHtml from 'prettier/parser-html';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
+import * as prettier from "prettier/standalone";
+import * as parserHtml from "prettier/parser-html";
 
-// Dil bilgisi ve format işlemi için context tipi
 interface CodeEditorContextType {
-  language: string; // Dil
-  setLanguage: (language: string) => void; // Dil ayarlama fonksiyonu
-  code: string; // Kod içeriği
-  setCode: React.Dispatch<React.SetStateAction<string>>; // Kod içeriğini güncelleme fonksiyonu
-  formatWithPrettier: () => Promise<void>; // Prettier format fonksiyonu
-  minimapEnabled: boolean; // Minimap durumunu tutan state
-  toggleMinimap: () => void; // Minimap'ı açma/kapama fonksiyonu
-  title: string; // Başlık bilgisi
-  setTitle: React.Dispatch<React.SetStateAction<string>>; // Başlık bilgisini güncelleme fonksiyonu
+  language: string;
+  setLanguage: (language: string) => void;
+  code: string;
+  setCode: React.Dispatch<React.SetStateAction<string>>;
+  formatWithPrettier: () => Promise<void>;
+  minimapEnabled: boolean;
+  previewEnabled: boolean;
+  toggleMinimap: () => void;
+  togglePreview: () => void;
+  title: string;
+  setTitle: React.Dispatch<React.SetStateAction<string>>;
 }
 
-// Varsayılan değerler
-const CodeEditorContext = createContext<CodeEditorContextType | undefined>(undefined);
+const CodeEditorContext = createContext<CodeEditorContextType | undefined>(
+  undefined
+);
 
 interface CodeEditorProviderProps {
   children: React.ReactNode;
 }
 
-export const CodeEditorProvider: React.FC<CodeEditorProviderProps> = ({ children }) => {
-  const [language, setLanguage] = useState<string>('plaintext'); // Dil bilgisi
-  const [code, setCode] = useState<string>(''); // Kod içeriği
-  const [minimapEnabled, setMinimapEnabled] = useState<boolean>(true); // Minimap durumunu başta true yapıyoruz
-  const [title, setTitle] = useState<string>('untitled'); // Başlık bilgisi
+export const CodeEditorProvider: React.FC<CodeEditorProviderProps> = ({
+  children,
+}) => {
+  const [language, setLanguage] = useState<string>("plaintext");
+  const [code, setCode] = useState<string>("");
+  const [minimapEnabled, setMinimapEnabled] = useState<boolean>(true);
+  const [previewEnabled, setPreviewEnabled] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("untitled");
 
-  // Sayfa açıldığında, localStorage'dan kodu ve başlığı alıyoruz
   useEffect(() => {
-    const storedCode = localStorage.getItem('code');
+    const storedCode = localStorage.getItem("code");
     if (storedCode) {
-      setCode(storedCode); // localStorage'dan kod varsa, setCode ile yükle
+      setCode(storedCode);
     }
-    
-    const storedTitle = localStorage.getItem('navbarTitle');
+
+    const storedTitle = localStorage.getItem("navbarTitle");
     if (storedTitle) {
-      setTitle(storedTitle); // localStorage'dan başlık varsa, setTitle ile yükle
+      setTitle(storedTitle);
     }
   }, []);
 
-  // Prettier format fonksiyonu
   const formatWithPrettier = useCallback(async () => {
-    let formattedCode = '';
+    let formattedCode = "";
 
     try {
-      switch (language) {
-        case 'html':
-          formattedCode = await prettier.format(code, {
-            parser: 'html',
-            plugins: [parserHtml],
-          });
-          break;
-        default:
-          formattedCode = code;
-          break;
-      }
+      formattedCode =
+        language === "html"
+          ? await prettier.format(code, {
+              parser: "html",
+              plugins: [parserHtml],
+            })
+          : code;
 
-      setCode(formattedCode); // Güncellenmiş kodu set et
-      localStorage.setItem('code', formattedCode); // localStorage'a kaydet
+      setCode(formattedCode);
+      localStorage.setItem("code", formattedCode);
     } catch (error) {
-      console.error('Prettier format error:', error);
+      console.error("Prettier format error:", error);
     }
   }, [code, language]);
 
-  // Minimap'ı açma/kapama fonksiyonu
   const toggleMinimap = () => {
-    setMinimapEnabled((prev) => !prev); // Mevcut durumu tersine çevir
+    setMinimapEnabled((prev) => !prev);
   };
 
+  const togglePreview = () => {
+    setPreviewEnabled((prev) => !prev);
+  };
+
+  const contextValue = useMemo(
+    () => ({
+      language,
+      setLanguage,
+      code,
+      setCode,
+      formatWithPrettier,
+      minimapEnabled,
+      toggleMinimap,
+      previewEnabled,
+      togglePreview,
+      title,
+      setTitle,
+    }),
+    [language, code, formatWithPrettier, minimapEnabled, previewEnabled, title]
+  );
+
   return (
-    <CodeEditorContext.Provider
-      value={{
-        language,
-        setLanguage,
-        code,
-        setCode,
-        formatWithPrettier,
-        minimapEnabled,
-        toggleMinimap,
-        title,
-        setTitle, // Başlık bilgisini güncellemek için ekledik
-      }}
-    >
+    <CodeEditorContext.Provider value={contextValue}>
       {children}
     </CodeEditorContext.Provider>
   );
 };
 
-// Custom hook - CodeEditorContext kullanımı için
 export const useCodeEditor = (): CodeEditorContextType => {
   const context = useContext(CodeEditorContext);
   if (!context) {
-    throw new Error('useCodeEditor must be used within a CodeEditorProvider');
+    throw new Error("useCodeEditor must be used within a CodeEditorProvider");
   }
   return context;
 };

@@ -6,11 +6,10 @@ import { CodeEditorProvider } from "./components/context/CodeEditorContext";
 const App: React.FC = () => {
   return (
     <div className="app">
-        <CodeEditorProvider>
-         <Navbar/>
-          <CodeEditor />
+      <CodeEditorProvider>
+        <Navbar />
+        <CodeEditor />
       </CodeEditorProvider>
-
     </div>
   );
 };

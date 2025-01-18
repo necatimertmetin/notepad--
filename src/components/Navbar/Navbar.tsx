@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   AppBar,
   IconButton,
@@ -24,8 +24,9 @@ export const Navbar: React.FC = () => {
   const [title, setTitle] = useState<string>("untitled");
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const previewWindowRef = useRef<Window | null>(null);
 
-  const { setLanguage, formatWithPrettier, toggleMinimap, togglePreview } =
+  const { setLanguage, formatWithPrettier, toggleMinimap, code } =
     useCodeEditor();
 
   useEffect(() => {
@@ -87,6 +88,61 @@ export const Navbar: React.FC = () => {
     setLanguage(newLanguage);
   }, [title, setLanguage]);
 
+  const openPreviewInNewWindow = () => {
+    // Eğer pencere zaten açıksa, içeriği güncelle
+    if (previewWindowRef.current && !previewWindowRef.current.closed) {
+      const iframe = previewWindowRef.current.document.querySelector("iframe");
+      if (iframe) {
+        iframe.srcdoc = code; // iframe içeriğini güncelle
+      }
+      return;
+    }
+
+    // Yeni pencereyi aç
+    const newWindow = window.open("", "_blank", "width=800,height=600");
+    if (newWindow) {
+      previewWindowRef.current = newWindow; // Pencereyi referansla sakla
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>${title}</title>
+            <style>
+              body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #f4f4f4;
+              }
+              iframe {
+                width: 100%;
+                height: 100%;
+                border: none;
+                background-color: #fff;
+              }
+            </style>
+          </head>
+          <body>
+            <iframe srcdoc="${code.replace(/"/g, "&quot;")}"></iframe>
+          </body>
+        </html>
+      `);
+      newWindow.document.close();
+    }
+  };
+
+  // Her code değiştiğinde preview penceresinin içeriğini güncelle
+  useEffect(() => {
+    if (previewWindowRef.current && !previewWindowRef.current.closed) {
+      const iframe = previewWindowRef.current.document.querySelector("iframe");
+      if (iframe) {
+        iframe.srcdoc = code; // iframe içeriğini güncelle
+      }
+    }
+  }, [code]); // code değiştikçe tetiklenir
+
   return (
     <AppBar position="static" color="warning">
       <Toolbar variant="dense">
@@ -143,7 +199,7 @@ export const Navbar: React.FC = () => {
           size="small"
           color="inherit"
           sx={{ ml: 2 }}
-          onClick={togglePreview}
+          onClick={openPreviewInNewWindow}
         >
           <Preview />
         </IconButton>

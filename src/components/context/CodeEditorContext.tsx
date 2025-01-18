@@ -16,9 +16,7 @@ interface CodeEditorContextType {
   setCode: React.Dispatch<React.SetStateAction<string>>;
   formatWithPrettier: () => Promise<void>;
   minimapEnabled: boolean;
-  previewEnabled: boolean;
   toggleMinimap: () => void;
-  togglePreview: () => void;
   title: string;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -37,7 +35,6 @@ export const CodeEditorProvider: React.FC<CodeEditorProviderProps> = ({
   const [language, setLanguage] = useState<string>("plaintext");
   const [code, setCode] = useState<string>("");
   const [minimapEnabled, setMinimapEnabled] = useState<boolean>(true);
-  const [previewEnabled, setPreviewEnabled] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("untitled");
 
   useEffect(() => {
@@ -75,10 +72,6 @@ export const CodeEditorProvider: React.FC<CodeEditorProviderProps> = ({
     setMinimapEnabled((prev) => !prev);
   };
 
-  const togglePreview = () => {
-    setPreviewEnabled((prev) => !prev);
-  };
-
   const contextValue = useMemo(
     () => ({
       language,
@@ -88,12 +81,10 @@ export const CodeEditorProvider: React.FC<CodeEditorProviderProps> = ({
       formatWithPrettier,
       minimapEnabled,
       toggleMinimap,
-      previewEnabled,
-      togglePreview,
       title,
       setTitle,
     }),
-    [language, code, formatWithPrettier, minimapEnabled, previewEnabled, title]
+    [language, code, formatWithPrettier, minimapEnabled, title]
   );
 
   return (

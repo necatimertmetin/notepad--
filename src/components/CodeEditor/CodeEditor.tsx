@@ -2,18 +2,10 @@ import React, { useEffect } from "react";
 import { Editor } from "@monaco-editor/react";
 import { useCodeEditor } from "../context/CodeEditorContext";
 import * as monaco from "monaco-editor";
-import { Box, Stack, SwipeableDrawer } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 
 const CodeEditor: React.FC = () => {
-  const {
-    language,
-    code,
-    setCode,
-    minimapEnabled,
-    previewEnabled,
-    togglePreview,
-  } = useCodeEditor();
-
+  const { language, code, setCode, minimapEnabled } = useCodeEditor();
   useEffect(() => {
     monaco.editor.defineTheme("vs-dark", {
       base: "vs",
@@ -53,36 +45,6 @@ const CodeEditor: React.FC = () => {
           />
         </Box>
       </Stack>
-
-      <SwipeableDrawer
-        open={previewEnabled}
-        anchor="right"
-        variant="temporary"
-        onClose={togglePreview}
-        onOpen={() => {}}
-      >
-        <Box
-          sx={{
-            width: "1366px",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "#fff",
-          }}
-        >
-          <iframe
-            title="HTML Preview"
-            style={{
-              width: "100%",
-              height: "100%",
-              border: "none",
-              backgroundColor: "#fff",
-              boxSizing: "border-box",
-            }}
-            srcDoc={code}
-          />
-        </Box>
-      </SwipeableDrawer>
     </Box>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Editor } from "@monaco-editor/react";
 import { useCodeEditor } from "../context/CodeEditorContext";
 import * as monaco from "monaco-editor";
-import { Box, Drawer, Stack, SwipeableDrawer } from "@mui/material";
+import { Box, Stack, SwipeableDrawer } from "@mui/material";
 
 const CodeEditor: React.FC = () => {
   const {
